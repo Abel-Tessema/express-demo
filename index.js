@@ -1,11 +1,15 @@
 const express = require('express');
 const Joi = require('joi');
-const logger = require('logger');
-const authenticator = require('authenticator');
+
+const logger = require('./logger');
+const authenticator = require('./authenticator');
 
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use(express.static('public'));
+
 app.use(logger);
 app.use(authenticator);
 

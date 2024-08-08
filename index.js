@@ -3,12 +3,17 @@ const Joi = require('joi');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const config = require('config');
+const startupDebugger = require('debug')('app:startup');
+const dbDebugger = require('debug')('app:db');
+// const debug = require('debug')('app:startup'); // Use only this if you only need one debugger in this file.
 
 const logger = require('./logger');
 const authenticator = require('./authenticator');
 
 const app = express();
 
+app.set('view engine', 'pug');
+// app.set('views', './views'); // The default directory for views. This is the default value. You can overwrite it.
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
@@ -18,15 +23,18 @@ app.use(helmet());
 
 if (app.get('env') === 'development') {
   app.use(morgan('tiny'));
-  console.log('Morgan enabled...')
+  startupDebugger('Morgan enabled...')
 }
+
+// Database work...
+dbDebugger('Connected to the database...');
 
 app.use(logger);
 app.use(authenticator);
 
 console.log(`Application name: ${config.get('name')}`);
 console.log(`Mail server: ${config.get('mail.host')}`);
-console.log(`Mail Password: ${config.get('mail.password')}`);
+// console.log(`Mail Password: ${config.get('mail.password')}`); // $env:expressAppPassword='1234'
 
 let courses = [
     {id: 1, name: 'Course 1'},
@@ -37,7 +45,10 @@ let courses = [
 app.get(
     '/',
     (request, response) => {
-        response.send('<h1>index.js</h1>');
+        response.render(
+          'index',
+          {title: 'My Express App', message: 'Yahallo!'}
+        );
     }
 );
 

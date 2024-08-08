@@ -2,6 +2,7 @@ const express = require('express');
 const Joi = require('joi');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const config = require('config');
 
 const logger = require('./logger');
 const authenticator = require('./authenticator');
@@ -12,10 +13,20 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 app.use(helmet());
-app.use(morgan('tiny'));
+
+// process.env.NODE_ENV = 'production';
+
+if (app.get('env') === 'development') {
+  app.use(morgan('tiny'));
+  console.log('Morgan enabled...')
+}
 
 app.use(logger);
 app.use(authenticator);
+
+console.log(`Application name: ${config.get('name')}`);
+console.log(`Mail server: ${config.get('mail.host')}`);
+console.log(`Mail Password: ${config.get('mail.password')}`);
 
 let courses = [
     {id: 1, name: 'Course 1'},

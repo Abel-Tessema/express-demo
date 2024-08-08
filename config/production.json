@@ -1,0 +1,7 @@
+{
+  "environment": "production",
+  "name": "My Express App - Production",
+  "mail": {
+    "host": "prod-mail-server"
+  }
+}
